@@ -15,5 +15,10 @@ namespace ScreepsApiClient
         {
             return epoch.AddSeconds(timeSeconds);
         }
+
+        public static byte[] DecodeBase64(this string input)
+        {
+            return Convert.FromBase64String(input);
+        }
     }
 }

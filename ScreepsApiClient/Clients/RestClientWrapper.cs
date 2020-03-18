@@ -1,9 +1,12 @@
 namespace ScreepsApiClient
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using global::ScreepsApiClient.Model;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using RestSharp;
 
     internal class RestClientWrapper
@@ -21,13 +24,25 @@ namespace ScreepsApiClient
             this.client = new RestClient();
         }
 
-        public async Task<T> GetAsync<T>(string path) where T : new()
+        public async Task<T> GetAsync<T>(string path, string shard = null) where T : new()
         {
-            var request = new RestRequest(this.baseUrl + path);
-            request.AddHeader("X-Token", this.token);
+            var request = new RestRequest(this.baseUrl + path)
+                .AddHeader("X-Token", this.token);
+
+            if (shard != null)
+            {
+                request = request.AddParameter("shard", shard);
+            }
 
             var response = await this.client.ExecuteAsync(request);
-            var content = this.client.Deserialize<T>(response).Data;
+            var rawContent = (JObject) JsonConvert.DeserializeObject(response.Content);
+            
+            if (rawContent.ContainsKey("error"))
+            {
+                throw new Exception(rawContent["error"].Value<string>());
+            }
+            
+            var content = JsonConvert.DeserializeObject<T>(response.Content); //TODO: Can we avoid doing this twice?
 
             if (content is RateLimitResponse rateLimitResponse)
             {

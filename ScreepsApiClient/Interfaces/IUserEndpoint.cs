@@ -6,5 +6,7 @@ namespace ScreepsApiClient
     public interface IUserEndpoint
     {
         Task<GetUserNameResponse> GetNameAsync();
+
+        Task<GetUserMemoryResponse<TMem>> GetMemoryAsync<TMem>(string shard);
     }
 }

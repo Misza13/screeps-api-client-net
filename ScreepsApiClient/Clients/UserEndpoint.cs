@@ -12,9 +12,9 @@ namespace ScreepsApiClient
             this.client = client;
         }
         
-        public async Task<UserNameResponse> GetUsernameAsync()
+        public async Task<GetUserNameResponse> GetNameAsync()
         {
-            var response = await this.client.GetAsync<UserNameResponse>("user/name");
+            var response = await this.client.GetAsync<GetUserNameResponse>("user/name");
             return response;
         }
     }
